@@ -20,17 +20,20 @@ void imu_low_pass_filter(const sensor_msgs::ImuConstPtr &msg)
     out_msg.linear_acceleration.x = msg->linear_acceleration.x - gravity[0];
     out_msg.linear_acceleration.y = msg->linear_acceleration.y - gravity[1];
     out_msg.linear_acceleration.z = msg->linear_acceleration.z - gravity[2];
+		out_msg.angular_velocity = msg->angular_velocity;
 
-    _imu_out.publish(msg);
+    _imu_out.publish(out_msg);
 }
 
 int main(int argc, char *argv[])
 {
-    ros::NodeHandle nh;
     ros::init(argc, argv, "imu_low_pass_filter_node");
+    ros::NodeHandle nh;
 
     _imu_out = nh.advertise<sensor_msgs::Imu>("/imu/low_pass/data_raw", 100);
     _imu_in = nh.subscribe("/imu/imu_raw", 100, imu_low_pass_filter);
+
+		ros::spin();
     
     return 0;
 }
